@@ -1,0 +1,17 @@
+{
+    "predef": [],
+    "bitwise": true,
+    "curly": true,
+    "eqeqeq": true,
+    "esversion": 6,
+    "latedef": true,
+    "nonbsp": true,
+    "singleGroups": true,
+    "undef": true,
+    "unused": true,
+    "varstmt": true,
+    "browser": true,
+    "node": true,
+    "devel": true,
+    "module": true
+}
