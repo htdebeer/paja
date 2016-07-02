@@ -1,6 +1,6 @@
 {
   "name": "paja",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Pandoc wrapped in JavaScript",
   "main": "index.js",
   "scripts": {

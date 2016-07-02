@@ -32,7 +32,7 @@ const option2method = function (option) {
  * replaces an already existing value.
  */
 const singleOptionMethod = function (Pandoc, option) {
-    Pandoc.prototype[option2method(option)] = function (val) {
+    Pandoc.prototype[option2method(option)] = function (val = true) {
         this.config[option] = val;
         return this;
     };
@@ -44,7 +44,7 @@ const singleOptionMethod = function (Pandoc, option) {
  */
 const multiOptionMethod = function (Pandoc, option) {
     Pandoc.prototype[option2method(option)] = function (val) {
-        if (undefined === this.configuration[option]) {
+        if (undefined === this.config[option]) {
             this.config[option] = [];
         }
 
