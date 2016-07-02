@@ -15,7 +15,7 @@ Like Paru, Paja support automating the use of pandoc. Paja is [free
 software](https://www.gnu.org/philosophy/free-sw.html);
 Paja is licenced under the [GNU General Public Licence version
 3](https://www.gnu.org/licenses/gpl-3.0.html). Get the code at
-[https://github.com/htdebeer/paja]((https://github.com/htdebeer/paja).
+[https://github.com/htdebeer/paja](https://github.com/htdebeer/paja).
 
 The current version of Paja is *0.0.0*, which is a first alpha version.
 
