@@ -7,7 +7,7 @@ software](https://www.gnu.org/philosophy/free-sw.html);
 Paja is licenced under the [GNU General Public Licence version
 3](https://www.gnu.org/licenses/gpl-3.0.html). 
 
-The current version of Paja is *0.0.0*, which is a first alpha version.
+The current version of Paja is *0.0.1*, which is a first alpha version.
 
 See [Paja's webpage](https://heerdebeer.org/Software/markdown/paja/) for more
 detailed documentation. Below follows a very brief excerpt of that
@@ -18,8 +18,27 @@ documentation
 Because Paja is a wrapper around pandoc, pandoc obviously is a requirement for
 Paja. Install Paja with [npm](https://www.npmjs.com/):
 
-    npm install -g paja
+    npm install paja
 
 # Usage
 
-See examples directory.
+The obligatory "hello world" program with paja:
+
+    const paja = require("paja");
+    const INPUT = `
+    > Hello World! 
+
+    from **Paja**`;
+
+    const markdown2html = paja.Pandoc.converter().from("markdown").to("html");
+    markdown2html.run(INPUT, console.log);
+
+which will output:
+
+    <blockquote>
+    <p>Hello World!</p>
+    </blockquote>
+    <p>from <strong>Paja</strong></p>
+
+For more examples, see the
+[documentation](https://heerdebeer.org/Software/markdown/paja/) or the examples subdirectory.

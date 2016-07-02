@@ -1,2 +1,2 @@
 import Pandoc from "./Pandoc.js";
-module.exports = Pandoc;
+module.exports.Pandoc = Pandoc;
