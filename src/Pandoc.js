@@ -17,6 +17,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import PANDOC_OPTIONS from "./PANDOC_OPTIONS.js";
+import PandocStream from "./PandocStream.js";
 
 /** 
  * Convert CLI options, such as "a-long-option" to its conventional
@@ -106,6 +107,10 @@ let Pandoc = class {
         proc.stdin.setEncoding("utf8");
         proc.stdin.write(input);
         proc.stdin.end();
+    }
+
+    stream() {
+        return new PandocStream(this);
     }
 
 };

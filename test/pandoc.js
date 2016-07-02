@@ -22,7 +22,7 @@ describe("Pandoc", function () {
 describe("PandocStream", function () {
     it("should run pandoc as a transform stream", function (done) {
 
-        let pandocConverter = new PandocStream(converter);
+        let pandocConverter = converter.stream();
 
         pandocConverter.on("data", (output) => {
             output.trim().should.equal(OUTPUT);
@@ -35,4 +35,6 @@ describe("PandocStream", function () {
         pandocConverter.end();
 
     });
+
 });
+

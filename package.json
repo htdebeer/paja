@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/htdebeer/paja/issues"
   },
-  "homepage": "https://github.com/htdebeer/paja#readme",
+  "homepage": "https://heerdebeer.org/Software/markdown/paja/",
   "devDependencies": {
     "chai": "*",
     "mocha": "*",

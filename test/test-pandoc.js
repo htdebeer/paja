@@ -102,6 +102,23 @@ var PANDOC_OPTIONS = [
     ["katex-stylesheet",            ""              ],
 ];
 
+const Transform = require("stream").Transform;
+
+var PandocStream = class extends Transform {
+    constructor(converter, options = {}) {
+        super(options);
+        this.converter = converter;
+    }
+
+    _transform(data, encoding, callback) {
+        const input = data.toString();
+        this.converter.run(input, (output) => {
+            this.push(output);
+            callback();
+        });
+    }
+}
+
 /** 
  * Convert CLI options, such as "a-long-option" to its conventional
  * JavaScript name "aLongOption".
@@ -192,6 +209,10 @@ let Pandoc = class {
         proc.stdin.end();
     }
 
+    stream() {
+        return new PandocStream(this);
+    }
+
 };
 
 for (let [option, defaultValue] of PANDOC_OPTIONS) {
@@ -199,23 +220,6 @@ for (let [option, defaultValue] of PANDOC_OPTIONS) {
         multiOptionMethod(Pandoc, option);
     } else {
         singleOptionMethod(Pandoc, option);
-    }
-}
-
-const Transform = require("stream").Transform;
-
-var PandocStream = class extends Transform {
-    constructor(converter, options = {}) {
-        super(options);
-        this.converter = converter;
-    }
-
-    _transform(data, encoding, callback) {
-        const input = data.toString();
-        this.converter.run(input, (output) => {
-            this.push(output);
-            callback();
-        });
     }
 }
 
@@ -240,7 +244,7 @@ describe("Pandoc", function () {
 describe("PandocStream", function () {
     it("should run pandoc as a transform stream", function (done) {
 
-        let pandocConverter = new PandocStream(converter);
+        let pandocConverter = converter.stream();
 
         pandocConverter.on("data", (output) => {
             output.trim().should.equal(OUTPUT);
@@ -253,4 +257,5 @@ describe("PandocStream", function () {
         pandocConverter.end();
 
     });
+
 });
