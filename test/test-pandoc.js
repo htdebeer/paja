@@ -238,6 +238,47 @@ describe("Pandoc", function () {
                     done();
                 });
         });
+
+        it("should accept flags that are implicitly true", function (done) {
+            converter.toc();
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+        
+        it("should accept flags that are explicitly true", function (done) {
+            converter.toc(true);
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+        
+        it("should accept flags that are false", function (done) {
+            converter.toc(false);
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+
+        it("should accept multi-options", function (done) {
+            converter.variable("title:This is a title").variable("author: Huub de Beer");
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+        
+        it("should use the last setting used for single-options", function (done) {
+            converter.to("docx").to("html");
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+
     })
 });
 

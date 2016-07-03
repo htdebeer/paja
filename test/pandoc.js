@@ -1,21 +1,61 @@
 import Pandoc from "../src/Pandoc";
-import PandocStream from "../src/PandocStream.js";
 
 const should = require("chai").should();
-            
-const INPUT = "hello *bold* day";
-const OUTPUT = "<p>hello <em>bold</em> day</p>";
 
 const converter = Pandoc.converter().from("markdown").to("html");
+
+const INPUT = "hello *bold* day";
+const OUTPUT = "<p>hello <em>bold</em> day</p>";
 
 describe("Pandoc", function () {
     describe("converter", function () {
         it("should run pandoc successfully", function (done) {
-                converter.run(INPUT, (output) => {
-                    output.trim().should.equal(OUTPUT);
-                    done();
-                });
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
         });
+
+        it("should accept flags that are implicitly true", function (done) {
+            converter.toc();
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+
+        it("should accept flags that are explicitly true", function (done) {
+            converter.toc(true);
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+
+        it("should accept flags that are false", function (done) {
+            converter.toc(false);
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+
+        it("should accept multi-options", function (done) {
+            converter.variable("title:This is a title").variable("author: Huub de Beer");
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+
+        it("should use the last setting used for single-options", function (done) {
+            converter.to("docx").to("html");
+            converter.run(INPUT, (output) => {
+                output.trim().should.equal(OUTPUT);
+                done();
+            });
+        });
+
     })
 });
 
