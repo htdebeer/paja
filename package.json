@@ -4,7 +4,7 @@
   "description": "Pandoc wrapped in JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "rollup test/pandoc.js -o test/test-pandoc.js; mocha test/test-pandoc.js",
+    "test": "rollup test/pandoc.js -o test/test-pandoc.js; mocha test/test-pandoc.js; rollup test/filter.js -o test/test-filter.js; mocha test/test-filter.js",
     "build": "rollup src/paja.js -o index.js"
   },
   "repository": {

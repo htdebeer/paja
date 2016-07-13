@@ -223,80 +223,137 @@ for (let [option, defaultValue] of PANDOC_OPTIONS) {
     }
 }
 
+/**
+ * paja: pandoc wrapped in JavaScript; use pandoc with JavaScript
+ * 
+ * copyright (C) 2016 Huub de Beer <Huub@heerdebeer.org>
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+var DocumentElement = class {
+    constructor(data) {
+        this.contents = data;
+    }
+
+    toObject() {
+        return this.contents;
+    }
+}
+
+var Meta = class extends DocumentElement {
+}
+
+var Block = class extends DocumentElement {
+}
+
+var Document = class extends DocumentElement {
+    constructor(data) {
+        super(data);
+        this.meta = new Meta(data[0]);
+        this.blocks = data[1].reduce((bs, b) => {
+            bs.push(new Block(b));
+            return bs;
+        }, []);
+    }
+
+    toObject() {
+        return [
+            this.meta.toObject(),
+            this.blocks.map((b) => b.toObject())
+        ];
+    }
+
+    toJSON() {
+        return JSON.stringify(this.toObject());
+    }
+}
+
+const selectorMatches = function (selector, block) {
+    return true;
+};
+
+const applyRule = function (selector, action) {
+    return function (block) {
+        if (selectorMatches(selector, block)) {
+            rule(block);
+        }
+    }
+}
+
+const applyRules = function (filter) {
+    return function (block) {
+        filter.rules.forEach(applyRule);
+    }
+}
+
+let Filter = class {
+    constructor() {
+        this.rules = [];
+        this.doc = null;
+    }
+
+    static filter() {
+        return new Filter();
+    }
+
+    run(json) {
+        const filter = new Filter(json);
+        const data = JSON.parse(json);
+        this.doc = new Document(data);
+        this.doc.blocks.forEach(applyRules(this));
+        return this.toJSON();
+    }
+
+    when(selector, callback) {
+        this.rules.push([selector, callback]);        
+        return this;
+    }
+
+    toJSON() {
+        return this.doc.toJSON();
+    }
+
+}
+
 const should = require("chai").should();
 
-const converter = Pandoc.converter().from("markdown").to("html");
+const markdown2json = Pandoc.converter()
+    .from("markdown")
+    .to("json")
+    ;
 
-const INPUT = "hello *bold* day";
-const OUTPUT = "<p>hello <em>bold</em> day</p>";
+const json2markdown = Pandoc.converter()
+    .from("json")
+    .to("markdown")
+    .standalone() // use standalone to get metadata back
+    ;
 
-describe("Pandoc", function () {
-    describe("converter", function () {
-        it("should run pandoc successfully", function (done) {
-            converter.run(INPUT, (output) => {
-                output.trim().should.equal(OUTPUT);
-                done();
-            });
-        });
+const INPUT = "this is an string";
 
-        it("should accept flags that are implicitly true", function (done) {
-            converter.toc();
-            converter.run(INPUT, (output) => {
-                output.trim().should.equal(OUTPUT);
-                done();
-            });
-        });
-
-        it("should accept flags that are explicitly true", function (done) {
-            converter.toc(true);
-            converter.run(INPUT, (output) => {
-                output.trim().should.equal(OUTPUT);
-                done();
-            });
-        });
-
-        it("should accept flags that are false", function (done) {
-            converter.toc(false);
-            converter.run(INPUT, (output) => {
-                output.trim().should.equal(OUTPUT);
-                done();
-            });
-        });
-
-        it("should accept multi-options", function (done) {
-            converter.variable("title:This is a title").variable("author: Huub de Beer");
-            converter.run(INPUT, (output) => {
-                output.trim().should.equal(OUTPUT);
-                done();
-            });
-        });
-
-        it("should use the last setting used for single-options", function (done) {
-            converter.to("docx").to("html");
-            converter.run(INPUT, (output) => {
-                output.trim().should.equal(OUTPUT);
-                done();
-            });
-        });
-
-    })
-});
-
-describe("PandocStream", function () {
-    it("should run pandoc as a transform stream", function (done) {
-
-        let pandocConverter = converter.stream();
-
-        pandocConverter.on("data", (output) => {
-            output.trim().should.equal(OUTPUT);
-            done();
-        });
-
-        pandocConverter.setEncoding("utf8");
-
-        pandocConverter.write(INPUT);
-        pandocConverter.end();
-
+const IDENTITY_FILTER = Filter.filter()
+    .when("", function (block) {
+        return block;
     });
 
+describe("The Identity filter", function () {
+    it("should convert input to the same output≡input", function (done) {
+        markdown2json.run(INPUT, (json) => {
+            json2markdown.run(IDENTITY_FILTER.run(json), (md) => {
+                md.trim().should.equal(INPUT);
+                done();
+            });
+        });
+    });
 });
